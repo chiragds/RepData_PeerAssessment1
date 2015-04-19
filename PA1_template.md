@@ -5,7 +5,8 @@ output: html_document
 ### Reproducible Research Assignment
 **set some variable first...**
 
-```{r, echo=TRUE}
+
+```r
 mainDirectory <- "C:/Coursera/Data_Science/workingdirectory"
 dataDirectory <- "data"
 fileName <- "activity.csv"
@@ -17,7 +18,8 @@ require(ggplot2)
 
 **Load and process data**
 
-```{r, echo=TRUE}
+
+```r
 if (file.exists(paste(mainDirectory, dataDirectory, fileName, sep = "/", collapse = "/"))) {
      dfWithNA <- read.csv(paste(dataDirectory, fileName, sep = "/"))
      df <- na.omit(dfWithNA)
@@ -29,7 +31,6 @@ if (file.exists(paste(mainDirectory, dataDirectory, fileName, sep = "/", collaps
      #using data.table
      #plotData2 <- dt[, list(steps=mean(steps)), by = interval]
 } 
-
 ```
 
 
@@ -45,12 +46,16 @@ if (file.exists(paste(mainDirectory, dataDirectory, fileName, sep = "/", collaps
 Now, create a histogram using ggplot2 package.
 
 
-```{r, echo=TRUE}
+
+```r
 #graphics
 hist(plotData$steps, main="Histogram of total number of steps per day", 
      xlab="Total number of steps in a day")
+```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
+```r
 #lattice
 #histogram(plotData$steps, 
 #          main="Histogram of total number of steps per day", 
@@ -67,6 +72,11 @@ p = p + geom_histogram(binwidth = 710, fill="white",col="black")
 p = p + xlab("Total number of steps in a day") 
 p = p + ggtitle("Histogram of number of steps")
 print(p)
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-2.png) 
+
+```r
 #barchart(steps ~ date, data = plotData)
 ```
 
@@ -74,14 +84,24 @@ print(p)
 
 The mean of total number of steps per day
 
-```{r, echo=TRUE}
+
+```r
 mean(plotData$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 The median of total number of steps per day
 
-```{r, echo=TRUE}
+
+```r
 median(plotData$steps)
+```
+
+```
+## [1] 10765
 ```
 
 **What is the average daily activity pattern?**
@@ -91,7 +111,8 @@ median(plotData$steps)
 
 Create a time series plot using lattice package this time.
 
-```{r, echo=TRUE}
+
+```r
 #lattice
 xyplot(plotData2$steps ~ plotData2$interval, 
        data = plotData2, 
@@ -99,7 +120,11 @@ xyplot(plotData2$steps ~ plotData2$interval,
        xlab = "interval", 
        ylab = "avg number of steps", 
        main = "time series plot of 5-minute interval and avg number of steps taken")
+```
 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+
+```r
 #ggplot2
 #p = ggplot(plotData2, aes(interval, steps)) 
 #p = p + geom_line() 
@@ -112,17 +137,28 @@ xyplot(plotData2$steps ~ plotData2$interval,
 
 2.    Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r, echo=TRUE}
+
+```r
 plotData2[which.max(plotData2$steps),]
+```
+
+```
+##     interval    steps
+## 104      835 206.1698
 ```
 
 **Imputing missing values**
 
 1.   Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r, echo=TRUE}
+
+```r
 #is.na returns logical vector, which gives position where NA is true
 length(which(is.na(dfWithNA$steps)))
+```
+
+```
+## [1] 2304
 ```
 
 2.   Devise a strategy for filling in all of the missing values in the dataset.
@@ -131,7 +167,8 @@ length(which(is.na(dfWithNA$steps)))
 
 Easiest solution would be to fill NA with 0.
 
-```{r, echo=TRUE}
+
+```r
 #df[is.na(df)] <- 0
 
 #is there any NAs?
@@ -139,13 +176,30 @@ Easiest solution would be to fill NA with 0.
 sum(as.numeric(is.na(dfWithNA$steps)))
 ```
 
+```
+## [1] 2304
+```
 
 
-```{r, echo=TRUE}
+
+
+```r
 df <- dfWithNA
 summary(df)
+```
 
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA's   :2304     (Other)   :15840
+```
 
+```r
 df[is.na(df)] <- 
      plotData2$steps[which(plotData2$interval 
           == df$interval)][!is.na(plotData2$steps[which(plotData2$interval == df$interval)])]
@@ -153,16 +207,32 @@ df[is.na(df)] <-
 summary(df)
 ```
 
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 27.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##                   (Other)   :15840
+```
+
 4.   Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
 
-```{r, echo=TRUE}
+
+```r
 plotData <- aggregate(steps ~ date, df, sum)
 
 #graphics
 hist(plotData$steps, 
      main="Histogram of total number of steps per day", 
      xlab="Total number of steps in a day")
+```
 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
+
+```r
 #ggplot2
 #qplot(plotData$steps, geom="histogram", binwidth = 710, 
 #main = "Histogram of number of steps", 
@@ -176,30 +246,44 @@ p = p + ggtitle("Histogram of number of steps")
 print(p)
 ```
 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-2.png) 
+
 The mean of total number of steps per day
 
-```{r, echo=TRUE}
+
+```r
 mean(plotData$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 The median of total number of steps per day
 
-```{r, echo=TRUE}
+
+```r
 median(plotData$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 **Are there differences in activity patterns between weekdays and weekends?**
 
 1.   Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r, echo=TRUE}
+
+```r
 df$dtype <- as.factor(ifelse(weekdays( as.Date(df$date) )  %in% c("Saturday","Sunday"), "Weekend", "Weekday"))
 ```
 
 2.   Make a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
 
-```{r, echo=TRUE}
+
+```r
 plotData2 <- aggregate(steps ~ interval + dtype, df, mean)
 
 #ggplot2
@@ -212,8 +296,11 @@ p = p + facet_wrap(~ dtype, ncol=1 )
 print(p)
 ```
 
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png) 
+
 Removing all the variables from workspace
 
-```{r, echo=TRUE}
+
+```r
 rm(list = ls())
 ```
